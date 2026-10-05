@@ -227,38 +227,3 @@ BEGIN
 END
 GO
 
--- ------------------------------------------------------------
--- VISTAS DE REPORTE
--- ------------------------------------------------------------
-
--- Conteo crudo de asistencia por alumno y grupo
-CREATE VIEW vw_ResumenAsistenciaAlumnoGrupo AS
-SELECT
-    al.id   AS alumno_id, al.matricula, al.nombre,
-    g.id    AS grupo_id,  g.nombre AS grupo,
-    COUNT(a.id)                                          AS total_sesiones,
-    SUM(CASE WHEN a.estado='presente'    THEN 1 ELSE 0 END) AS presentes,
-    SUM(CASE WHEN a.estado='retardo'     THEN 1 ELSE 0 END) AS retardos,
-    SUM(CASE WHEN a.estado='ausente'     THEN 1 ELSE 0 END) AS ausentes,
-    SUM(CASE WHEN a.estado='justificado' THEN 1 ELSE 0 END) AS justificados
-FROM Asistencias a
-JOIN Sesiones s  ON s.id  = a.sesion_id
-JOIN Grupos   g  ON g.id  = s.grupo_id
-JOIN Alumnos  al ON al.id = a.alumno_id
-GROUP BY al.id, al.matricula, al.nombre, g.id, g.nombre;
-GO
-
--- Igual que la anterior, pero ya con las reglas de negocio aplicadas:
--- 3 retardos = 1 falta; 20% de faltas equivalentes = riesgo de baja.
-CREATE VIEW vw_RiesgoBajaAlumnoGrupo AS
-SELECT *,
-    (ausentes + (retardos / 3)) AS faltas_equivalentes,
-    CAST(ROUND(
-        100.0 - (CAST(ausentes + (retardos / 3) AS FLOAT) / NULLIF(total_sesiones, 0)) * 100
-    , 1) AS FLOAT) AS porcentaje_asistencia,
-    CASE
-        WHEN CAST(ausentes + (retardos / 3) AS FLOAT) / NULLIF(total_sesiones, 0) >= 0.20 THEN 1
-        ELSE 0
-    END AS en_riesgo
-FROM vw_ResumenAsistenciaAlumnoGrupo;
-GO
