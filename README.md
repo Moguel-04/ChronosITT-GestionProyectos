@@ -29,7 +29,7 @@ CHANGELOG.md Registro de cambios
 ```bash
 cd backend
 pip install -r requirements.txt
-python -m app.main        # http://localhost:5000/api/health
+python -m app.main        # http://localhost:5000/api/health (ejemplo)
 ```
 
 ## Flujo de trabajo en Git
