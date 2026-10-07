@@ -18,7 +18,7 @@ Frontend: HTML/CSS/JavaScript · Backend: Python (Flask) · Base de datos: SQL S
 ## Estructura del repositorio
 ```
 docs/        Plan de calidad, artefactos y diagramas (casos de uso, flujo, ER)
-database/    schema.sql (modelo de datos) y seed.sql (datos de ejemplo)
+database/    chronos_qr.sql (modelo de datos) y seed.sql (datos de ejemplo)
 backend/     API en Python (app/)
 frontend/    Interfaz web responsiva (index.html, css/, js/)
 tests/       Pruebas (casos CP-01 a CP-06 del plan de calidad)
